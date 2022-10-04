@@ -19,7 +19,6 @@ spec:
         image: 127.0.0.1:9001/web-app:latest
         ports:
         - containerPort: 80
-
 ---
 apiVersion: v1
 kind: Service
@@ -37,8 +36,8 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: web-app-secret
-type: 
+type: Opaque
 data:
   docker-server: 127.0.0.1:9001
-  docker-username: admin
-  docker-password: admin
+  docker-username: dXNlcm5hbWU=
+  docker-password: cGFzc3dvcmQ=
