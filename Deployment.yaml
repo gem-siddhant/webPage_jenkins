@@ -26,10 +26,9 @@ kind: Service
 metadata:
   name: web-app
 spec:
-  type: NodePort
+  selector:
+    app: web-app
   ports:
     - protocol: TCP
       port: 80
       targetPort: 80
-  selectors:
-    name: web-app
