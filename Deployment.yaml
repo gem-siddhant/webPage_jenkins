@@ -38,6 +38,5 @@ metadata:
   name: web-app-secret
 type: Opaque
 data:
-  docker-server: 127.0.0.1:9001
   docker-username: dXNlcm5hbWU=
   docker-password: cGFzc3dvcmQ=
