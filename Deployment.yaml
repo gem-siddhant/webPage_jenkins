@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: web-app
-        image: nginx:1.14.2
+        image: 127.0.0.1:9001/web-app:latest
         ports:
         - containerPort: 80
 
@@ -28,6 +28,8 @@ metadata:
 spec:
   type: NodePort
   ports:
-    port: 80
+    - protocol: TCP
+      port: 80
+      targetPort: 80
   selectors:
     name: web-app
