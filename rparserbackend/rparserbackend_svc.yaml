@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rparserbackendsvc
+  namespace: dev
+spec:
+  ports:
+  - port: 5000
+    protocol: TCP
+    targetPort: 5000
+  selector:
+    app: rparserbackend
+  sessionAffinity: None
+  type: ClusterIP
+

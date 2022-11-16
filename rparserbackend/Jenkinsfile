@@ -1,0 +1,37 @@
+
+node('image_builder') { 
+   stage('resume_parser_backend_checkout') {
+         dir ('resume_parser_backend') {
+         checkout([$class: 'GitSCM', branches: [[name: '*/development']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg:  [], \
+userRemoteConfigs: [[credentialsId: 'admingithub', url: 'git@github.com:Gemini-Solutions/resume_parser.git']]])
+         }
+    }
+  try {
+   stage('Build_image') {
+            dir ('resume_parser_backend') {
+              container('docker-image-builder') {
+                withCredentials([usernamePassword(credentialsId: 'docker_registry', passwordVariable: 'docker_pass', usernameVariable: 'docker_user')]) {
+              sh 'docker image build -f Dockerfile -t registry-np.geminisolutions.com/resume_parser/resume_parser_backend/resume_parser:1.0-$BUILD_NUMBER -t registry-np.geminisolutions.com/resume_parser/resume_parser_backend/resume_parser .'
+              sh '''docker login -u $docker_user -p $docker_pass https://registry-np.geminisolutions.com'''
+              sh 'docker push registry-np.geminisolutions.com/resume_parser/resume_parser_backend/resume_parser:1.0-$BUILD_NUMBER'
+              sh 'docker push registry-np.geminisolutions.com/resume_parser/resume_parser_backend/resume_parser'
+           }
+         }
+        }
+        stage('Deployment_stage') {
+               dir ('resume_parser_backend') {
+                   container('docker-image-builder') {
+                   kubeconfig(credentialsId: 'KubeConfigCred') {
+                   sh '/usr/local/bin/kubectl apply -f Deployment_dev.yaml -n dev'
+                   sh '/usr/local/bin/kubectl rollout restart Deployment rparserbackend -n dev'
+
+                   }
+                   }
+               }
+           }
+      }
+  } finally {
+     sh 'echo current_image="registry-np.geminisolutions.com/resume_parser/resume_parser_backend/resume_parser:1.0-$BUILD_NUMBER" > build.properties'
+     archiveArtifacts artifacts: 'build.properties', onlyIfSuccessful: true
+  }
+    }

@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rparserbackend
+  namespace: dev
+  labels:
+    app: rparserbackend
+spec:
+  replicas: 1
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app: rparserbackend
+  template:
+    metadata:
+      labels:
+        app: rparserbackend
+    spec:
+      containers:
+      - name: rparserbackend
+        image: registry-np.geminisolutions.com/resume_parser/resume_parser_backend/resume_parser
+        ports:
+        - name: rparserbackend
+          containerPort: 5000
+        imagePullPolicy: Always
+      imagePullSecrets:
+      - name: regcred
